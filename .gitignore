@@ -1,0 +1,14 @@
+# 产物与临时文件
+chk*/
+vfy*/
+lni_out*/
+.verify_out/
+*.png
+verify.log
+tools/__pycache__/
+__pycache__/
+*.pyc
+cmp*/
+cmp2*/
+vfy*/
+chk*/
