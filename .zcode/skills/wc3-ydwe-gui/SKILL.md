@@ -250,6 +250,17 @@ DzFrameSetScriptMultiple(GetLocalPlayer(), FrameEvent_..._Pressed, 按钮帧)
     很容易只更新了前者、上传的还是旧的（本轮就出过一次：修复在 `无尽传承.w3x`，`xx-v0.9.w3x` 仍是旧版）。
     做法：`cp 工作.w3x 发布包.w3x && md5sum 两者` 必须一致，再解包 grep 本次改动的关键函数确认。
 
+
+24. 🔴 **`CustomScriptCode`（自定义代码动作）会被截断，约 250~300 字符**：多行脚本超长后**后半段静默丢失**，
+    报错表现为 `String literal size limit exceeded` / `unclosed string`。对策：一行一动作、每行尽量短；
+    复杂逻辑拆成多条 CustomScriptCode 或写成 JASS 函数再调用。
+25. 🔴 **JASSHelper 报 `Syntax Errors` 的模态框会静默拦掉之后所有 Ctrl+S**：现象是"按了保存但文件里
+    还是 vJass（`#include` ≠ 0）、屏幕没有任何报错"。排查入口：`C:\games\KKWE_editor\logs\compileerrors.txt`
+    （带行号）；窗口类名 `TForm4`、标题 `Syntax Errors`，用 `PostMessage WM_CLOSE` 关掉即可恢复保存。
+    ⇒ **每次 Ctrl+S 后必须解包验证 `#include` = 0**，别只看文件大小变化。
+26. **删触发器/动作按索引操作极易误删相邻项**（本轮误删过 `V3_CreepDead`）。批量删多个时**从后往前删**；
+    删完必须重新 `list_triggers` 数一遍，确认核心页（刷怪/击杀/死亡/追击）都还在。
+
 ## 12. 真机验收流程（可直接照抄，实测有效）
 
 前提：编辑器开着 + 地图已存盘。`scripts/game_input.ps1` 是这套的实现（鼠标 + 键盘 + 前置置顶）。
