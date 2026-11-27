@@ -218,6 +218,23 @@ DzFrameSetScriptMultiple(GetLocalPlayer(), FrameEvent_..._Pressed, 按钮帧)
 17. **Ctrl+S 前必须 `ShowWindow(SW_RESTORE)` + `SetWindowPos(HWND_TOPMOST)` 再 `SetForegroundWindow`**，
     否则按键被吞、文件 mtime 不变；而 `save_map` 又是假成功 → 很容易误判"已存盘"。
 
+
+18. 🔴 **英雄技能有两张表，"去掉英雄技能"必须清 `heroAbilList`（`uhab`），不是 `abilList`（`uabi`）**。
+    `abilList` 装普通/被动技能；**英雄的技能学习栏（+号那 4 个）在 `heroAbilList`**。
+    只清 `abilList` 会「写入成功、返回成功、游戏里技能一个没少」——静默失效，实测踩过。
+    正确做法三层：① 先 `list_object_fields(type=unit, search=hero)` 探测字段名，别猜；
+    ② `heroAbilList=""` 治本；③ 再加 `UnitRemoveAbility(英雄,'AHtb'…)` 兜底（防继承/缓存）。
+    ✅ 验证只能看**实际状态**：探针打印 `GetUnitAbilityLevel(英雄, 技能代码)` 全为 0，或截图确认命令栏无「+」学习按钮。
+19. 🔴 **`set_object_data` 返回成功 ≠ 物编改动生效**。它可以往任何字段写值、写完不校验，
+    写错字段/写错字段名都是"成功"。判断生效只有两条路：**解包看 `table/*.ini` 原文**，或**游戏内读回实际状态**。
+    ⚠️ 补充：`get_object_data` **读不回自定义技能**的 `levels/Cost/Cool/Rng`（一律 `found:false`，写入其实是好的），
+    核对要用 `get_object_modifications` 或解包 `table/ability.ini`。
+20. **物编 ini 只写"与父模板不同的值"**（继承省略）。例：`A000` 继承 `AEbl`（闪烁，默认 buttonpos=(1,2)），
+    我们只把 Y 改成 1、X 相同 → ini 里只有 `Buttonpos_2 = 1`、**看不到 X**。误以为"坐标没写进去"就会白改一轮。
+    查证方法：去 `w3x2lni/data/zhCN-*/prebuilt/Custom/ability.ini` 查父技能的默认 buttonpos，再看差异。
+21. **改"英雄技能/属性"类需求，先问一句"这单位是不是英雄"**：英雄走 `heroAbilList` / `heroStr` 等字段，
+    普通单位走 `abilList`；两者混用是最常见的"改了没效果"来源。
+
 ## 12. 真机验收流程（可直接照抄，实测有效）
 
 前提：编辑器开着 + 地图已存盘。`scripts/game_input.ps1` 是这套的实现（鼠标 + 键盘 + 前置置顶）。
