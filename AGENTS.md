@@ -36,3 +36,12 @@
   - 现成工具：`python -I -X utf8 tools/close_dialogs.py`（只列）/ `--close`（关已知弹窗）/ `--close --all`（关所有非主窗口）。
     已实测：`create_custom_object` 弹框时 MCP 调用被卡死，脚本关闭后调用立即恢复。
 
+## 文件组织规则
+
+- **地图文件只保留一个**：`无尽刷怪.w3x`（工作文件 = 发布包，同一份）。
+  不要再生成 `无尽刷怪-v0.x.w3x`、`xxx.bak`、`testmap.w3x` 之类的副本堆在工作区；
+  需要备份/历史版本用 git（`git log` / `git show <commit>:无尽刷怪.w3x`）。
+- **所有截图放 `screenshots/`**：验证截图、游戏截图、编辑器截图统一存这里，不要散落在工作区根目录。
+- **解包临时目录用完即删**：`lni`/`obj` 的中间目录（如 `pkg/`、`chk/`）用完 `rm -rf`，不要留在工作区。
+- **设计文档放 `docs/`**：新设计/调研写成 `docs/<主题>.md`。
+

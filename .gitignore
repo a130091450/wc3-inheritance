@@ -16,3 +16,13 @@ gh_dev.json
 gh_devcode.txt
 gh_token.txt
 gh_boot.log
+
+# 临时解包目录
+pkg/
+chk*/
+vv/
+q1/
+# 地图副本（只保留单个工作文件）
+*-v*.w3x
+*.w3x.bak
+testmap.w3x
